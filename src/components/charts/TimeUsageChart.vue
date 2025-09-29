@@ -82,7 +82,13 @@ const initChart = () => {
           callbacks: {
             label: function(context) {
               const value = context.parsed.y || 0;
-              return `${value.toFixed(2)}分钟`;
+              if (value < 60) {
+                return `${value.toFixed(2)}分钟`;
+              } else {
+                const hours = Math.floor(value / 60);
+                const minutes = Math.round(value % 60);
+                return `${hours}小时${minutes}分钟`;
+              }
             }
           }
         }
