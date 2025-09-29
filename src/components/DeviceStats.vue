@@ -62,7 +62,11 @@ const formatTime = (minutes) => {
   } else {
     const hours = Math.floor(totalMinutes / 60);
     const remainingMinutes = Math.round(totalMinutes % 60);
-    return `${hours}小时${remainingMinutes}分钟`;
+    if (remainingMinutes === 0) {
+      return `${hours}小时`;
+    } else {
+      return `${hours}小时${remainingMinutes}分钟`;
+    }
   }
 };
 

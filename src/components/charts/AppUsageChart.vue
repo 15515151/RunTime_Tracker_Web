@@ -101,7 +101,11 @@ const handleAppUsageChart = () => {
                 } else {
                   const hours = Math.floor(value / 60);
                   const minutes = Math.round(value % 60);
+                  if (minutes === 0) {
+                  timeString = `${hours}小时`;
+                } else {
                   timeString = `${hours}小时${minutes}分钟`;
+                }
                 }
 
                 return `${label}: ${timeString} (${percentage}%)`;

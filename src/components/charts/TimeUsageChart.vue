@@ -87,7 +87,11 @@ const initChart = () => {
               } else {
                 const hours = Math.floor(value / 60);
                 const minutes = Math.round(value % 60);
-                return `${hours}小时${minutes}分钟`;
+                if (minutes === 0) {
+                  return `${hours}小时`;
+                } else {
+                  return `${hours}小时${minutes}分钟`;
+                }
               }
             }
           }
