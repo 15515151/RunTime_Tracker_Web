@@ -81,7 +81,8 @@ const initChart = () => {
         tooltip: {
           callbacks: {
             label: function(context) {
-              return `${context.parsed.y} 分钟`;
+              const value = context.parsed.y || 0;
+              return `${value.toFixed(2)}分钟`;
             }
           }
         }

@@ -3,7 +3,7 @@
 import { ref, onMounted, onUnmounted } from 'vue';
 import DeviceStats from './components/DeviceStats.vue';
 import config from './config.js'
-import GiscusComments from './components/GiscusComments.vue';
+
 import Footer from "./components/Footer.vue";
 import DateSelector from "./components/DateSelector.vue";
 const API_BASE = config.API_BASE
@@ -204,8 +204,7 @@ onUnmounted(() => {
             </div>
           </div>
 
-          <!-- 评论区组件 -->
-          <GiscusComments/>
+
 
           <!-- 设备列表 -->
           <div class="sticky top-4">
