@@ -5,6 +5,7 @@ const songData = ref(null);
 const error = ref(null);
 const isVisible = ref(false); // Controls visibility of the entire component
 const realtimePosition = ref(0);
+const isImageModalVisible = ref(false); // For image modal
 
 let pollIntervalId = null;
 let progressIntervalId = null;
@@ -12,6 +13,16 @@ let songEndTimer = null;
 
 let lastServerPosition = 0;
 let lastClientUpdateTime = 0;
+
+const openImageModal = () => {
+  isImageModalVisible.value = true;
+  document.body.classList.add('modal-open');
+};
+
+const closeImageModal = () => {
+  isImageModalVisible.value = false;
+  document.body.classList.remove('modal-open');
+};
 
 const fetchData = async () => {
   if (songEndTimer) {
@@ -121,10 +132,10 @@ onUnmounted(() => {
     </div>
 
     <div class="flex items-center gap-4">
-      <img :src="songData.detail.cover" alt="Album Cover" class="w-24 h-24 rounded-md shadow-lg" />
+      <img :src="songData.detail.cover" alt="Album Cover" class="w-24 h-24 rounded-md shadow-lg cursor-zoom-in" @click="openImageModal" />
       <div class="flex-1 min-w-0">
         <a :href="songData.detail.url" target="_blank" rel="noopener noreferrer" class="text-lg font-bold text-blue-500 hover:underline truncate block">{{ songData.detail.name }}</a>
-        <p class="text-sm text-gray-500 truncate">{{ songData.detail.artistNames.join(', ') }}</p>
+        <p class="text-sm text-gray-500 truncate">{{ songData.detail.artistNames.join(', ') }} -《{{ songData.detail.albumName }}》</p>
         <div class="mt-2">
           <div class="w-full bg-gray-200 rounded-full h-1.5 dark:bg-gray-700">
             <div class="bg-blue-500 h-1.5 rounded-full" :style="{ width: (realtimePosition / songData.duration * 100) + '%' }"></div>
@@ -136,5 +147,9 @@ onUnmounted(() => {
         </div>
       </div>
     </div>
+  </div>
+
+  <div v-if="isImageModalVisible" @click="closeImageModal" class="fixed inset-0 flex justify-center items-center z-50">
+    <img :src="songData.detail.cover" alt="Enlarged Album Cover" class="max-w-full max-h-full rounded-lg shadow-xl" @click.stop />
   </div>
 </template>
