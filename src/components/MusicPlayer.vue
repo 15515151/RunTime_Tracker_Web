@@ -39,7 +39,7 @@ const fetchData = async () => {
       const serverTime = data.server_timestamp;
       if (serverTime) {
         const latency = (Date.now() / 1000) - serverTime;
-        data.song_data.position += latency + 0.6;
+        data.song_data.position += latency + 0.45;
       }
       songData.value = data.song_data;
       isVisible.value = true;
