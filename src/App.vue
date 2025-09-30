@@ -6,6 +6,7 @@ import config from './config.js'
 
 import Footer from "./components/Footer.vue";
 import DateSelector from "./components/DateSelector.vue";
+import MusicPlayer from "./components/MusicPlayer.vue";
 const API_BASE = config.API_BASE
 const devices = ref([]);
 const selectedDevice = ref(null);
@@ -204,7 +205,8 @@ onUnmounted(() => {
             </div>
           </div>
 
-
+          <!-- 音乐播放器 -->
+          <MusicPlayer />
 
           <!-- 设备列表 -->
           <div class="sticky top-4">
