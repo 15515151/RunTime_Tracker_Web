@@ -8,8 +8,8 @@ const realtimePosition = ref(0);
 const isImageModalVisible = ref(false); // For image modal
 
 let pollIntervalId = null;
-let progressIntervalId = null;
 let songEndTimer = null;
+let animationFrameId = null;
 
 let lastServerPosition = 0;
 let lastClientUpdateTime = 0;
@@ -36,6 +36,11 @@ const fetchData = async () => {
 
     const data = await response.json();
     if (data.status === 'online' && data.song_data && data.song_data.available && data.song_data.playing) {
+      const serverTime = data.server_timestamp;
+      if (serverTime) {
+        const latency = (Date.now() / 1000) - serverTime;
+        data.song_data.position += latency + 0.6;
+      }
       songData.value = data.song_data;
       isVisible.value = true;
     } else {
@@ -57,28 +62,22 @@ const formatTime = (seconds) => {
   return `${mins}:${secs}`;
 };
 
-const startProgressUpdater = () => {
-  if (progressIntervalId) return;
+const updateProgress = () => {
+  if (isVisible.value && songData.value) {
+    const elapsedTime = (Date.now() - lastClientUpdateTime) / 1000;
+    const calculatedPosition = lastServerPosition + elapsedTime;
+    realtimePosition.value = Math.min(calculatedPosition, songData.value.duration);
 
-  progressIntervalId = setInterval(() => {
-    if (isVisible.value && songData.value) {
-      const elapsedTime = (Date.now() - lastClientUpdateTime) / 1000;
-      const calculatedPosition = lastServerPosition + elapsedTime;
-      realtimePosition.value = Math.min(calculatedPosition, songData.value.duration);
-
-      // When song ends, stop the ticker and schedule a fetch
-      if (realtimePosition.value >= songData.value.duration && !songEndTimer) {
-        stopProgressUpdater();
-        songEndTimer = setTimeout(() => fetchData(), 3000); // Wait 3 seconds then check
+    // When song ends, stop the animation and schedule a fetch
+    if (realtimePosition.value >= songData.value.duration && !songEndTimer) {
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+        animationFrameId = null;
       }
+      songEndTimer = setTimeout(() => fetchData(), 3000); // Wait 3 seconds then check
+    } else {
+      animationFrameId = requestAnimationFrame(updateProgress);
     }
-  }, 250);
-};
-
-const stopProgressUpdater = () => {
-  if (progressIntervalId) {
-    clearInterval(progressIntervalId);
-    progressIntervalId = null;
   }
 };
 
@@ -88,6 +87,11 @@ watch(songData, (newSongData) => {
     songEndTimer = null;
   }
 
+  if (animationFrameId) {
+    cancelAnimationFrame(animationFrameId);
+    animationFrameId = null;
+  }
+
   if (newSongData && isVisible.value) {
     // Always reset the baseline when we get fresh data from the server.
     // This corrects any client-side drift.
@@ -95,20 +99,21 @@ watch(songData, (newSongData) => {
     lastClientUpdateTime = Date.now();
     realtimePosition.value = newSongData.position;
 
-    startProgressUpdater();
-  } else {
-    stopProgressUpdater();
+    updateProgress();
   }
 }, { deep: true });
 
 onMounted(() => {
   fetchData();
-  pollIntervalId = setInterval(fetchData, 10000);
+  pollIntervalId = setInterval(fetchData, 5000);
 });
 
 onUnmounted(() => {
   if (pollIntervalId) clearInterval(pollIntervalId);
-  stopProgressUpdater();
+  if (animationFrameId) {
+    cancelAnimationFrame(animationFrameId);
+    animationFrameId = null;
+  }
   if (songEndTimer) clearTimeout(songEndTimer);
 });
 </script>
