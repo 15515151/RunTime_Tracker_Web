@@ -53,6 +53,11 @@ const shouldShowToggle = computed(() => {
   return processedApps.value.length > props.showLimit;
 });
 
+// 是否有数据
+const hasData = computed(() => {
+  return processedApps.value.length > 0;
+});
+
 // 切换展开/收起状态
 const toggleExpanded = () => {
   isExpanded.value = !isExpanded.value;
@@ -60,10 +65,10 @@ const toggleExpanded = () => {
 </script>
 
 <template>
-  <div v-if="stats" class="rounded-lg border-2 border-gray-200 shadow-md p-6 mb-6 dark:bg-[#181a1b] dark:border-gray-700">
+  <div class="rounded-lg border-2 border-gray-200 shadow-md p-6 mb-6 dark:bg-[#181a1b] dark:border-gray-700">
     <h3 class="text-lg font-medium mb-4">详细使用数据</h3>
     <div class="overflow-x-auto">
-      <table class="min-w-full not-dark:divide-y divide-gray-200">
+      <table class="min-w-full not-dark:divide-y divide-gray-200 dark:divide-gray-700">
         <thead>
         <tr>
           <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider not-sm:hidden">应用</th>
@@ -71,7 +76,7 @@ const toggleExpanded = () => {
         </tr>
         <!-- PC/平板设备并排显示 -->
         </thead>
-        <tbody class="not-dark:divide-y divide-gray-200 not-sm:hidden">
+        <tbody class="not-dark:divide-y divide-gray-200 not-sm:hidden dark:divide-gray-700">
         <tr v-for="usage in displayedApps" :key="usage.app">
           <td class="w-auto max-w-[50%] py-3 whitespace-nowrap text-sm font-medium">{{ usage.app }}</td>
           <td class="w-full max-w-[70%] px-6 py-3 whitespace-nowrap">
@@ -94,7 +99,7 @@ const toggleExpanded = () => {
         </tr>
         </tbody>
         <!-- 手机设备分2行显示 -->
-        <tbody class="not-dark:divide-y divide-gray-200 sm:hidden">
+        <tbody class="not-dark:divide-y divide-gray-200 sm:hidden dark:divide-gray-700">
         <tr v-for="usage in displayedApps" :key="usage.app">
           <!-- 调整为垂直布局 -->
           <td class="w-full py-1">
@@ -115,6 +120,10 @@ const toggleExpanded = () => {
         </tr>
         </tbody>
       </table>
+    </div>
+
+    <div v-if="!hasData" class="flex flex-col items-center justify-center min-h-[100px]">
+      <span class="text-gray-400 text-lg">暂无数据</span>
     </div>
 
     <!-- 展开/收起按钮 -->
