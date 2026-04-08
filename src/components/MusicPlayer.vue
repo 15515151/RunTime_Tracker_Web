@@ -31,7 +31,7 @@ const fetchData = async () => {
   }
 
   try {
-    const response = await fetch('https://api.music.xuxue07.cn/api/status');
+    const response = await fetch('https://api.music.xuxue07.cn:442/api/status');
     if (!response.ok) throw new Error(`API request failed`);
 
     const data = await response.json();
